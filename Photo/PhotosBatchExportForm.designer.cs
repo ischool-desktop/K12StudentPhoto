@@ -35,12 +35,13 @@
             this.cbxGraduate = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.cbxEnroll = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.groupPanel2 = new DevComponents.DotNetBar.Controls.GroupPanel();
-            this.cbxByClassNameSeatNo = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.cbxByStudentIDNumber = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.cbxByStudentNum = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.btnDownload = new DevComponents.DotNetBar.ButtonX();
             this.btnExit = new DevComponents.DotNetBar.ButtonX();
             this.checkBoxX1 = new DevComponents.DotNetBar.Controls.CheckBoxX();
+            this.cbxByClassNameSeatNo = new DevComponents.DotNetBar.Controls.CheckBoxX();
+            this.chkByClassSerial = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.groupPanel1.SuspendLayout();
             this.groupPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -166,12 +167,13 @@
             this.groupPanel2.BackColor = System.Drawing.Color.Transparent;
             this.groupPanel2.CanvasColor = System.Drawing.SystemColors.Control;
             this.groupPanel2.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.Office2007;
+            this.groupPanel2.Controls.Add(this.chkByClassSerial);
             this.groupPanel2.Controls.Add(this.cbxByClassNameSeatNo);
             this.groupPanel2.Controls.Add(this.cbxByStudentIDNumber);
             this.groupPanel2.Controls.Add(this.cbxByStudentNum);
             this.groupPanel2.Location = new System.Drawing.Point(12, 137);
             this.groupPanel2.Name = "groupPanel2";
-            this.groupPanel2.Size = new System.Drawing.Size(324, 65);
+            this.groupPanel2.Size = new System.Drawing.Size(324, 95);
             // 
             // 
             // 
@@ -204,21 +206,6 @@
             this.groupPanel2.StyleMouseOver.CornerType = DevComponents.DotNetBar.eCornerType.Square;
             this.groupPanel2.TabIndex = 4;
             this.groupPanel2.Text = "命名方式";
-            // 
-            // cbxByClassNameSeatNo
-            // 
-            // 
-            // 
-            // 
-            this.cbxByClassNameSeatNo.BackgroundStyle.Class = "";
-            this.cbxByClassNameSeatNo.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.cbxByClassNameSeatNo.CheckBoxStyle = DevComponents.DotNetBar.eCheckBoxStyle.RadioButton;
-            this.cbxByClassNameSeatNo.Location = new System.Drawing.Point(197, 7);
-            this.cbxByClassNameSeatNo.Name = "cbxByClassNameSeatNo";
-            this.cbxByClassNameSeatNo.Size = new System.Drawing.Size(92, 23);
-            this.cbxByClassNameSeatNo.TabIndex = 3;
-            this.cbxByClassNameSeatNo.Text = "班級座號";
-            this.cbxByClassNameSeatNo.CheckedChanged += new System.EventHandler(this.cbxByClassNameSeatNo_CheckedChanged);
             // 
             // cbxByStudentIDNumber
             // 
@@ -254,7 +241,7 @@
             this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDownload.BackColor = System.Drawing.Color.Transparent;
             this.btnDownload.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnDownload.Location = new System.Drawing.Point(189, 217);
+            this.btnDownload.Location = new System.Drawing.Point(189, 248);
             this.btnDownload.Name = "btnDownload";
             this.btnDownload.Size = new System.Drawing.Size(68, 23);
             this.btnDownload.TabIndex = 5;
@@ -267,7 +254,7 @@
             this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExit.BackColor = System.Drawing.Color.Transparent;
             this.btnExit.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnExit.Location = new System.Drawing.Point(268, 217);
+            this.btnExit.Location = new System.Drawing.Point(268, 248);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(68, 23);
             this.btnExit.TabIndex = 6;
@@ -282,7 +269,7 @@
             // 
             this.checkBoxX1.BackgroundStyle.Class = "";
             this.checkBoxX1.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
-            this.checkBoxX1.Location = new System.Drawing.Point(13, 217);
+            this.checkBoxX1.Location = new System.Drawing.Point(13, 248);
             this.checkBoxX1.Name = "checkBoxX1";
             this.checkBoxX1.Size = new System.Drawing.Size(125, 23);
             this.checkBoxX1.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
@@ -290,11 +277,40 @@
             this.checkBoxX1.Text = "以班級名稱分類";
             this.checkBoxX1.CheckedChanged += new System.EventHandler(this.checkBoxX1_CheckedChanged);
             // 
+            // cbxByClassNameSeatNo
+            // 
+            // 
+            // 
+            // 
+            this.cbxByClassNameSeatNo.BackgroundStyle.Class = "";
+            this.cbxByClassNameSeatNo.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.cbxByClassNameSeatNo.CheckBoxStyle = DevComponents.DotNetBar.eCheckBoxStyle.RadioButton;
+            this.cbxByClassNameSeatNo.Location = new System.Drawing.Point(197, 7);
+            this.cbxByClassNameSeatNo.Name = "cbxByClassNameSeatNo";
+            this.cbxByClassNameSeatNo.Size = new System.Drawing.Size(92, 23);
+            this.cbxByClassNameSeatNo.TabIndex = 3;
+            this.cbxByClassNameSeatNo.Text = "班級座號";
+            this.cbxByClassNameSeatNo.CheckedChanged += new System.EventHandler(this.cbxByClassNameSeatNo_CheckedChanged);
+            // 
+            // chkByClassSerial
+            // 
+            // 
+            // 
+            // 
+            this.chkByClassSerial.BackgroundStyle.Class = "";
+            this.chkByClassSerial.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.chkByClassSerial.CheckBoxStyle = DevComponents.DotNetBar.eCheckBoxStyle.RadioButton;
+            this.chkByClassSerial.Location = new System.Drawing.Point(15, 36);
+            this.chkByClassSerial.Name = "chkByClassSerial";
+            this.chkByClassSerial.Size = new System.Drawing.Size(92, 23);
+            this.chkByClassSerial.TabIndex = 4;
+            this.chkByClassSerial.Text = "會考格式";
+            // 
             // PhotosBatchExportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(345, 252);
+            this.ClientSize = new System.Drawing.Size(345, 277);
             this.Controls.Add(this.checkBoxX1);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnDownload);
@@ -323,9 +339,10 @@
         private DevComponents.DotNetBar.ButtonX btnDownload;
         private DevComponents.DotNetBar.ButtonX btnExit;
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxGraduate;
-        private DevComponents.DotNetBar.Controls.CheckBoxX cbxByClassNameSeatNo;
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxByStudentIDNumber;
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxByStudentNum;
         private DevComponents.DotNetBar.Controls.CheckBoxX checkBoxX1;
+        private DevComponents.DotNetBar.Controls.CheckBoxX chkByClassSerial;
+        private DevComponents.DotNetBar.Controls.CheckBoxX cbxByClassNameSeatNo;
     }
 }

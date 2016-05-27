@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using K12.Data;
 using FISCA.Presentation;
 using K12.Presentation;
+using FISCA.Data;
+using System.Data;
 
 namespace K12StudentPhoto
 {
@@ -67,10 +69,52 @@ namespace K12StudentPhoto
             if (cbxByClassNameSeatNo.Checked)
                 PhotoNameRule = StudPhotoEntity.PhotoNameRule.班級座號;
 
+            if (chkByClassSerial.Checked)
+                PhotoNameRule = StudPhotoEntity.PhotoNameRule.會考格式;
 
             SelStudenrList = new List<StudentRecord>();
             SelStudenrList = Student.SelectByIDs(NLDPanels.Student.SelectedSource);
             List<StudPhotoEntity> StudPhotoEntityList = new List<StudPhotoEntity>();
+
+            // 2016/5/17 恩正與穎驊共同新增，新增會考格式，需要下SQL指令產生班級序號
+             
+            Dictionary<string, string> dicStudentClassSerial = new Dictionary<string, string>();
+            if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+            {
+                QueryHelper _Q = new QueryHelper();
+                DataTable dt = _Q.Select(string.Format(@"
+SELECT 
+	student.id, 
+	student.seat_no,
+	class.class_name,
+	class.grade_year,
+	class.display_order,
+	class.class_No,
+	CASE class.class_no  is null WHEN  true    THEN '999'  ELSE  class.class_no END || 	lpad( student.seat_no::text,2,'0' ) AS NewStudentPhotoName
+FROM 
+	student
+	LEFT OUTER JOIN (
+		SELECT 
+			class.id,
+			class_name, 
+			grade_year, 
+			display_order, 
+			CASE grade_year WHEN 1 THEN 7 WHEN 2 THEN 8 WHEN 3 THEN 9 ELSE grade_year END::text||lpad(CASE display_order is null WHEN TRUE THEN (rank() over (PARTITION BY grade_year ORDER BY class_name)) ELSE display_order END::text, 2, '0') as class_No
+		FROM class
+		ORDER BY grade_year, display_order, class_name
+	) as class ON class.id = student.ref_class_id
+WHERE
+    student.id in ({0});", string.Join(",", NLDPanels.Student.SelectedSource)));
+                foreach (DataRow row in dt.Rows)
+                {
+                    var id = "" + row["id"];
+                    var sno = "" + row["NewStudentPhotoName"];
+                    if (!dicStudentClassSerial.ContainsKey(id))
+                        dicStudentClassSerial.Add(id, sno);
+                    else
+                        dicStudentClassSerial[id] = sno;
+                }
+            }
 
             _ExportFolderName.Clear();
             foreach (StudentRecord studRec in SelStudenrList)
@@ -108,6 +152,15 @@ namespace K12StudentPhoto
                     spe.SaveFilePathAndName = exportFolderName + "\\" + spe.SeatNo + ".jpg";
                     if (!_ExportFolderName.Contains(exportFolderName))
                         _ExportFolderName.Add(exportFolderName);
+                }
+
+
+                //  2016/5/17 恩正與穎驊共同新增
+                if (spe._PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+                {
+                    spe.SaveFilePathAndName = txtFilePath.Text + "\\" + dicStudentClassSerial[spe.StudentID] + ".jpg";
+                    
+                    ClassifyByClassName(spe, dicStudentClassSerial[spe.StudentID]);
                 }
 
                 StudPhotoEntityList.Add(spe);

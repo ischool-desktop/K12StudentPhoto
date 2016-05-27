@@ -8,7 +8,7 @@ namespace K12StudentPhoto
         /// <summary>
         /// 命名方式
         /// </summary>
-        public enum PhotoNameRule { 學號, 身分證號, 班級座號 };
+        public enum PhotoNameRule { 學號, 身分證號, 班級座號, 會考格式 };
         /// <summary>
         /// 照片項目
         /// </summary>
