@@ -51,6 +51,9 @@ namespace K12StudentPhoto
             if (cbxByClassNameSeatNo.Checked)
                 PhotoNameRule = StudPhotoEntity.PhotoNameRule.班級座號;
 
+            if (cbxByClassSerial.Checked)
+                PhotoNameRule = StudPhotoEntity.PhotoNameRule.會考格式;
+
             if (cbxByStudentIDNumber.Checked)
                 PhotoNameRule = StudPhotoEntity.PhotoNameRule.身分證號;
 
@@ -74,11 +77,20 @@ namespace K12StudentPhoto
                 StudPhotoEntityList.Add(spe);
             }
 
+            //班座
             if (cbxByClassNameSeatNo.Checked)
             {
-                if (PhotoBatchFileManager1.SetCurrentFullFoldersAndFilesInfo(txtFilePath.Text) == false)
+                if (PhotoBatchFileManager1.SetCurrentFullFoldersAndFilesInfo(txtFilePath.Text, PhotoNameRule) == false)
                     return;
             }
+
+            //會考格式
+            if (cbxByClassSerial.Checked)
+            {
+                if (PhotoBatchFileManager1.SetCurrentFullFoldersAndFilesInfo(txtFilePath.Text, PhotoNameRule) == false)
+                    return;
+            }
+
 
             // 放入待匯入資料
             List<StudPhotoEntity> ImportStudPhotoEntityList = new List<StudPhotoEntity>();
@@ -111,6 +123,32 @@ namespace K12StudentPhoto
                         }
                     }
                 }
+                //else
+                //{
+
+                //    if (spe.CheckSelectPhotoNameRule() == false)
+                //    {
+                //        spe.ErrorMessage += "檔名與命名規則不符, 命名方式:" + spe._PhotoNameRule.ToString() + ", " + spe.GetPhotoFullName();
+                //        checkCanUpdate = false;
+                //    }
+                //    else
+                //        checkCanUpdate = true;
+                //}
+
+                // 當使用會考格式驗證與其他不同
+                else if (cbxByClassSerial.Checked)
+                {
+                    if (spe._PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+                    {
+                        if (PhotoBatchFileManager1.CheckFolderAndFileInCurrentForClassNameSeatNo(spe.ClassName, spe.SeatNo))
+                            checkCanUpdate = true;
+                        else
+                        {
+                            spe.ErrorMessage += "檔名與命名規則不符, 命名方式:" + spe._PhotoNameRule.ToString() + ", " + spe.GetPhotoFullName();
+                            checkCanUpdate = false;
+                        }
+                    }
+                }
                 else
                 {
 
@@ -122,6 +160,7 @@ namespace K12StudentPhoto
                     else
                         checkCanUpdate = true;
                 }
+
 
                 if (checkCanUpdate)
                 {

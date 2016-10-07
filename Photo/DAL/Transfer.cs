@@ -7,6 +7,8 @@ using System.Xml;
 using FISCA.DSAUtil;
 using K12.Data;
 using K12.Data.Utility;
+using FISCA.Data;
+using System.Data;
 
 namespace K12StudentPhoto
 {
@@ -77,12 +79,27 @@ namespace K12StudentPhoto
 
                     }
                 }
+
+                // 會考格式轉成身分證方
+                if (spe._PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+                {
+                    // 先用身分證
+                    if (!string.IsNullOrEmpty(spe.StudentIDNumber))
+                        xmlHelper.AddElement("Student", "IDNumber", spe.StudentIDNumber);
+                    else
+                    {
+                        // 用學號
+                        if (!string.IsNullOrEmpty(spe.StudentNumber))
+                            xmlHelper.AddElement("Student", "StudentNumber", spe.StudentNumber);
+
+                    }
+                }
             }
 
             try
             {
                 DSAServices.CallService("SmartSchool.Student.UpdatePhoto", new DSRequest(xmlHelper.BaseElement));
-                
+
                 //EditStudent.UpdatePhoto(new DSRequest(xmlHelper.BaseElement));
             }
             catch (Exception ex)
@@ -112,7 +129,7 @@ namespace K12StudentPhoto
         /// </summary>
         /// <param name="StudPhtoEntityList"></param>
         /// <param name="_PhotoNameRule"></param>
-        public static List<StudPhotoEntity> SetStudBaseInfo(StudPhotoEntity.PhotoNameRule PhotoNameRule,List<StudPhotoEntity> StudPhtoEntityList)
+        public static List<StudPhotoEntity> SetStudBaseInfo(StudPhotoEntity.PhotoNameRule PhotoNameRule, List<StudPhotoEntity> StudPhtoEntityList)
         {
             //Student.Instance.SyncAllBackground();
             Dictionary<string, StudentRecord> StudIdx = new Dictionary<string, StudentRecord>();
@@ -142,28 +159,135 @@ namespace K12StudentPhoto
                 {
                     if (studRec.Class != null)
                     {
-                        string key = studRec.Class.Name.Trim() + K12.Data.Int.GetString(studRec.SeatNo);
+                        string key = studRec.Class.Name.Trim() +"_"+ K12.Data.Int.GetString(studRec.SeatNo);
                         if (!StudIdx.ContainsKey(key))
                             StudIdx.Add(key, studRec);
                     }
                 }
             }
 
-            // 有符合以上3類填入值
-            foreach (StudPhotoEntity spe in StudPhtoEntityList)
+            // 會考格式
+            if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
             {
-                string PhotoName = spe.GetPhotoName();
-                if (StudIdx.ContainsKey(PhotoName))
+                foreach (StudentRecord studRec in Students)
                 {
-                    if (StudIdx[PhotoName].Class != null)
-                        spe.ClassName = StudIdx[PhotoName].Class.Name;
-                    spe.SeatNo = K12.Data.Int.GetString(StudIdx[PhotoName].SeatNo);
-                    spe.StudentID = StudIdx[PhotoName].ID;
-                    spe.StudentIDNumber = StudIdx[PhotoName].IDNumber;
-                    spe.StudentName = StudIdx[PhotoName].Name;
-                    spe.StudentNumber = StudIdx[PhotoName].StudentNumber;
+                    if (studRec.Class != null)
+                    {
+                        string key = studRec.Class.Name.Trim() + "_"+K12.Data.Int.GetString(studRec.SeatNo);
+                        if (!StudIdx.ContainsKey(key))
+                            StudIdx.Add(key, studRec);
+                    }
                 }
             }
+
+
+            if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.身分證號 || PhotoNameRule == StudPhotoEntity.PhotoNameRule.班級座號 || PhotoNameRule == StudPhotoEntity.PhotoNameRule.學號)
+            {
+                // 有符合以上3類填入值
+                foreach (StudPhotoEntity spe in StudPhtoEntityList)
+                {
+                    string PhotoName = spe.GetPhotoName();
+                    if (StudIdx.ContainsKey(PhotoName))
+                    {
+                        if (StudIdx[PhotoName].Class != null)
+                            spe.ClassName = StudIdx[PhotoName].Class.Name;
+                        spe.SeatNo = K12.Data.Int.GetString(StudIdx[PhotoName].SeatNo);
+                        spe.StudentID = StudIdx[PhotoName].ID;
+                        spe.StudentIDNumber = StudIdx[PhotoName].IDNumber;
+                        spe.StudentName = StudIdx[PhotoName].Name;
+                        spe.StudentNumber = StudIdx[PhotoName].StudentNumber;
+                    }
+                }
+            }
+
+            //2016/10/5 穎驊筆記，新增會考格式照片匯入，其與上面三個方法最大的不同是PhotoName 不使用 spe.GetPhotoName，而是去抓SQL 對照
+            if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+            {
+
+                #region 整理會考班級名稱 與班級名稱對照表
+                List<string> Stu_ids = new List<string>();
+
+                Dictionary<string, string> ClassNo_to_ClassName = new Dictionary<string, string>();
+
+                foreach (var Stu in Students)
+                {
+                    Stu_ids.Add(Stu.ID);
+
+                }
+
+                QueryHelper _Q = new QueryHelper();
+                DataTable dt = _Q.Select(string.Format(@"
+SELECT 
+	student.id, 
+	student.seat_no,
+	class.class_name,
+	class.grade_year,
+	class.display_order,
+	class.class_No,
+	CASE class.class_no  is null WHEN  true    THEN '999'  ELSE  class.class_no END || 	lpad( student.seat_no::text,2,'0' ) AS NewStudentPhotoName
+FROM 
+	student
+	LEFT OUTER JOIN (
+		SELECT 
+			class.id,
+			class_name, 
+			grade_year, 
+			display_order, 
+			CASE grade_year WHEN 1 THEN 7 WHEN 2 THEN 8 WHEN 3 THEN 9 ELSE grade_year END::text||lpad(CASE display_order is null WHEN TRUE THEN (rank() over (PARTITION BY grade_year ORDER BY class_name)) ELSE display_order END::text, 2, '0') as class_No
+		FROM class
+		ORDER BY grade_year, display_order, class_name
+	) as class ON class.id = student.ref_class_id
+WHERE
+    student.id in ({0});", string.Join(",", Stu_ids)));
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (!ClassNo_to_ClassName.ContainsKey("" + row["class_no"]))
+                    {
+                        ClassNo_to_ClassName.Add("" + row["class_no"], "" + row["class_name"]);
+                    }
+
+                } 
+                #endregion
+
+                foreach (StudPhotoEntity spe in StudPhtoEntityList)
+                {
+                    string PhotoName = "";
+
+                    string FolderclassName = "";
+
+                    if (spe.PhotoFileInfo != null)
+                    {
+
+                        if (ClassNo_to_ClassName.ContainsKey(spe.PhotoFileInfo.Directory.Name.Substring(0, 3)))
+                        {
+                            FolderclassName = ClassNo_to_ClassName[spe.PhotoFileInfo.Directory.Name.Substring(0, 3)];
+                        }
+
+                        if (spe.PhotoFileInfo.Name.Substring(spe.PhotoFileInfo.Name.Length - spe.PhotoFileInfo.Extension.Length - 2, 1) == "0")
+                        {
+                            PhotoName = FolderclassName + "_"+spe.PhotoFileInfo.Name.Substring(spe.PhotoFileInfo.Name.Length - spe.PhotoFileInfo.Extension.Length-1, 1);
+                        }
+                        else
+                        {
+                            PhotoName = FolderclassName + "_" + spe.PhotoFileInfo.Name.Substring(spe.PhotoFileInfo.Name.Length - spe.PhotoFileInfo.Extension.Length - 2, 2);
+                        }
+                    }
+
+                    if (StudIdx.ContainsKey(PhotoName))
+                    {
+                        if (StudIdx[PhotoName].Class != null)
+                            spe.ClassName = StudIdx[PhotoName].Class.Name;
+                        spe.SeatNo = K12.Data.Int.GetString(StudIdx[PhotoName].SeatNo);
+                        spe.StudentID = StudIdx[PhotoName].ID;
+                        spe.StudentIDNumber = StudIdx[PhotoName].IDNumber;
+                        spe.StudentName = StudIdx[PhotoName].Name;
+                        spe.StudentNumber = StudIdx[PhotoName].StudentNumber;
+                    }
+                }
+
+            }
+
             return StudPhtoEntityList;
         }
 

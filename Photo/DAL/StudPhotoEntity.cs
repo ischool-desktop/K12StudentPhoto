@@ -1,5 +1,10 @@
 ﻿using System.Drawing;
 using System.IO;
+using FISCA.Data;
+using System.Data;
+using System.Collections.Generic;
+using K12.Data;
+using K12.Presentation;
 
 namespace K12StudentPhoto
 {
@@ -84,13 +89,17 @@ namespace K12StudentPhoto
             if (_PhotoNameRule == PhotoNameRule.班級座號)
             {
                 if (PhotoFileInfo != null)
-                    returnValue = PhotoFileInfo.Directory.Name + PhotoFileInfo.Name.Substring(0, PhotoFileInfo.Name.Length - PhotoFileInfo.Extension.Length);
+                    returnValue = PhotoFileInfo.Directory.Name +"_"+ PhotoFileInfo.Name.Substring(0, PhotoFileInfo.Name.Length - PhotoFileInfo.Extension.Length);
             }
+   
             else
             {
                 if (PhotoFileInfo != null)
                     returnValue = PhotoFileInfo.Name.Substring(0, PhotoFileInfo.Name.Length - PhotoFileInfo.Extension.Length);
             }
+
+
+
             return returnValue;
         }
 

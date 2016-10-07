@@ -40,6 +40,7 @@
             this.cbxByStudentNum = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.btnUpload = new DevComponents.DotNetBar.ButtonX();
             this.btnExit = new DevComponents.DotNetBar.ButtonX();
+            this.cbxByClassSerial = new DevComponents.DotNetBar.Controls.CheckBoxX();
             this.groupPanel1.SuspendLayout();
             this.groupPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -60,8 +61,8 @@
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // 
             // 
@@ -69,7 +70,7 @@
             this.txtFilePath.Border.CornerType = DevComponents.DotNetBar.eCornerType.Square;
             this.txtFilePath.Location = new System.Drawing.Point(75, 13);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(182, 25);
+            this.txtFilePath.Size = new System.Drawing.Size(253, 25);
             this.txtFilePath.TabIndex = 1;
             // 
             // btnBrowse
@@ -78,7 +79,7 @@
             this.btnBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnBrowse.BackColor = System.Drawing.Color.Transparent;
             this.btnBrowse.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnBrowse.Location = new System.Drawing.Point(275, 13);
+            this.btnBrowse.Location = new System.Drawing.Point(346, 13);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(58, 23);
             this.btnBrowse.TabIndex = 2;
@@ -87,8 +88,8 @@
             // 
             // groupPanel1
             // 
-            this.groupPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupPanel1.BackColor = System.Drawing.Color.Transparent;
             this.groupPanel1.CanvasColor = System.Drawing.SystemColors.Control;
             this.groupPanel1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.Office2007;
@@ -96,7 +97,7 @@
             this.groupPanel1.Controls.Add(this.cbxEnroll);
             this.groupPanel1.Location = new System.Drawing.Point(12, 52);
             this.groupPanel1.Name = "groupPanel1";
-            this.groupPanel1.Size = new System.Drawing.Size(324, 65);
+            this.groupPanel1.Size = new System.Drawing.Size(395, 65);
             // 
             // 
             // 
@@ -160,17 +161,18 @@
             // 
             // groupPanel2
             // 
-            this.groupPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupPanel2.BackColor = System.Drawing.Color.Transparent;
             this.groupPanel2.CanvasColor = System.Drawing.SystemColors.Control;
             this.groupPanel2.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.Office2007;
+            this.groupPanel2.Controls.Add(this.cbxByClassSerial);
             this.groupPanel2.Controls.Add(this.cbxByClassNameSeatNo);
             this.groupPanel2.Controls.Add(this.cbxByStudentIDNumber);
             this.groupPanel2.Controls.Add(this.cbxByStudentNum);
             this.groupPanel2.Location = new System.Drawing.Point(12, 137);
             this.groupPanel2.Name = "groupPanel2";
-            this.groupPanel2.Size = new System.Drawing.Size(324, 65);
+            this.groupPanel2.Size = new System.Drawing.Size(395, 65);
             // 
             // 
             // 
@@ -252,7 +254,7 @@
             this.btnUpload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpload.BackColor = System.Drawing.Color.Transparent;
             this.btnUpload.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnUpload.Location = new System.Drawing.Point(189, 217);
+            this.btnUpload.Location = new System.Drawing.Point(260, 217);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(68, 23);
             this.btnUpload.TabIndex = 5;
@@ -265,18 +267,32 @@
             this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExit.BackColor = System.Drawing.Color.Transparent;
             this.btnExit.ColorTable = DevComponents.DotNetBar.eButtonColor.OrangeWithBackground;
-            this.btnExit.Location = new System.Drawing.Point(268, 217);
+            this.btnExit.Location = new System.Drawing.Point(339, 217);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(68, 23);
             this.btnExit.TabIndex = 6;
             this.btnExit.Text = "離開";
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
+            // cbxByClassSerial
+            // 
+            // 
+            // 
+            // 
+            this.cbxByClassSerial.BackgroundStyle.Class = "";
+            this.cbxByClassSerial.BackgroundStyle.CornerType = DevComponents.DotNetBar.eCornerType.Square;
+            this.cbxByClassSerial.CheckBoxStyle = DevComponents.DotNetBar.eCheckBoxStyle.RadioButton;
+            this.cbxByClassSerial.Location = new System.Drawing.Point(294, 7);
+            this.cbxByClassSerial.Name = "cbxByClassSerial";
+            this.cbxByClassSerial.Size = new System.Drawing.Size(92, 23);
+            this.cbxByClassSerial.TabIndex = 4;
+            this.cbxByClassSerial.Text = "會考格式";
+            // 
             // PhotosBatchImportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(345, 252);
+            this.ClientSize = new System.Drawing.Size(416, 252);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.groupPanel2);
@@ -284,6 +300,7 @@
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.txtFilePath);
             this.Controls.Add(this.labelX1);
+            this.DoubleBuffered = true;
             this.Name = "PhotosBatchImportForm";
             this.Text = "匯入批次照片";
             this.groupPanel1.ResumeLayout(false);
@@ -306,5 +323,6 @@
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxByClassNameSeatNo;
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxByStudentIDNumber;
         private DevComponents.DotNetBar.Controls.CheckBoxX cbxByStudentNum;
+        private DevComponents.DotNetBar.Controls.CheckBoxX cbxByClassSerial;
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using K12.Data;
+using FISCA.Data;
+using System.Data;
 
 namespace K12StudentPhoto
 {
@@ -62,12 +65,63 @@ namespace K12StudentPhoto
         /// 設定目前資料夾內的完整資料夾與檔案
         /// </summary>
         /// <param name="FolderPath"></param>
-        public bool SetCurrentFullFoldersAndFilesInfo(string FolderPath)
+        public bool SetCurrentFullFoldersAndFilesInfo(string FolderPath,StudPhotoEntity.PhotoNameRule PhotoNameRule)
         {
             bool checkSetPass = false;
             _DefaultFolderAndFilesInfo.Clear();
             _DefaultFolederAndFilesName.Clear();
             _DefaultFolederAndFilesNameForClassNameSeatNo.Clear();
+
+
+            #region 整理會考班級名稱 與班級名稱對照表
+
+            List<StudentRecord> Students = Student.SelectAll();
+
+            List<string> Stu_ids = new List<string>();
+
+            Dictionary<string, string> ClassNo_to_ClassName = new Dictionary<string, string>();
+
+            foreach (var Stu in Students)
+            {
+                Stu_ids.Add(Stu.ID);
+
+            }
+
+            QueryHelper _Q = new QueryHelper();
+            DataTable dt = _Q.Select(string.Format(@"
+SELECT 
+	student.id, 
+	student.seat_no,
+	class.class_name,
+	class.grade_year,
+	class.display_order,
+	class.class_No,
+	CASE class.class_no  is null WHEN  true    THEN '999'  ELSE  class.class_no END || 	lpad( student.seat_no::text,2,'0' ) AS NewStudentPhotoName
+FROM 
+	student
+	LEFT OUTER JOIN (
+		SELECT 
+			class.id,
+			class_name, 
+			grade_year, 
+			display_order, 
+			CASE grade_year WHEN 1 THEN 7 WHEN 2 THEN 8 WHEN 3 THEN 9 ELSE grade_year END::text||lpad(CASE display_order is null WHEN TRUE THEN (rank() over (PARTITION BY grade_year ORDER BY class_name)) ELSE display_order END::text, 2, '0') as class_No
+		FROM class
+		ORDER BY grade_year, display_order, class_name
+	) as class ON class.id = student.ref_class_id
+WHERE
+    student.id in ({0});", string.Join(",", Stu_ids)));
+
+            foreach (DataRow row in dt.Rows)
+            {
+                if (!ClassNo_to_ClassName.ContainsKey("" + row["class_no"]))
+                {
+                    ClassNo_to_ClassName.Add("" + row["class_no"], "" + row["class_name"]);
+                }
+
+            }
+            #endregion
+
 
             if (checkHasFolder(FolderPath))
             {
@@ -84,12 +138,45 @@ namespace K12StudentPhoto
                         int num = 0;
                         filesName.Add(fi.Name);
                         FilesInfo.Add(fi);
-                        int.TryParse(fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length), out num);
+
+                        if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.班級座號) 
+                        {
+                            int.TryParse(fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length), out num);
+                        }
+                        if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+                        {
+                            //int.TryParse(fi.Name.Substring(2,2), out num);
+                           //固定抓後兩碼
+                            int.TryParse(fi.Name.Substring(fi.Name.Length - fi.Extension.Length - 2, 2), out num);
+                        }
+
+
                         IntFileNameList.Add(num);
                     }
-                    _DefaultFolderAndFilesInfo.Add(di, FilesInfo);
-                    _DefaultFolederAndFilesName.Add(di.Name, filesName);
-                    _DefaultFolederAndFilesNameForClassNameSeatNo.Add(di.Name, IntFileNameList);
+
+                    if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.班級座號)
+                    {
+                        _DefaultFolderAndFilesInfo.Add(di, FilesInfo);
+                        _DefaultFolederAndFilesName.Add(di.Name, filesName);
+                        _DefaultFolederAndFilesNameForClassNameSeatNo.Add(di.Name, IntFileNameList);
+                    }
+                    
+                    if (PhotoNameRule == StudPhotoEntity.PhotoNameRule.會考格式)
+                    {
+                        string di_name = "";
+
+
+                        if (ClassNo_to_ClassName.ContainsKey(di.Name))
+                        {
+                            di_name = ClassNo_to_ClassName[di.Name];
+                        }
+
+                        _DefaultFolderAndFilesInfo.Add(di, FilesInfo);
+                        _DefaultFolederAndFilesName.Add(di_name, filesName);
+                        _DefaultFolederAndFilesNameForClassNameSeatNo.Add(di_name, IntFileNameList);
+                    }
+
+            
                 }
                 checkSetPass = true;
             }
