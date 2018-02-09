@@ -157,7 +157,10 @@ namespace K12StudentPhoto
             {
                 foreach (StudentRecord studRec in Students)
                 {
-                    if (studRec.Class != null)
+                    //2018/2/9，穎驊註記， 高雄反映，有學校照片匯入會有錯誤訊息的狀況，
+                    //經檢查過後，發現其會抓到已刪除的舊學生資料，導致能作為上傳照片key值的 學號、身分字號可能對不上
+                    //導致上傳失敗，在此增加一條件，僅有一般生才會加入對照表
+                    if (studRec.Class != null && studRec.Status == StudentRecord.StudentStatus.一般)
                     {
                         string key = studRec.Class.Name.Trim() +"_"+ K12.Data.Int.GetString(studRec.SeatNo);
                         if (!StudIdx.ContainsKey(key))
@@ -171,7 +174,10 @@ namespace K12StudentPhoto
             {
                 foreach (StudentRecord studRec in Students)
                 {
-                    if (studRec.Class != null)
+                    //2018/2/9，穎驊註記， 高雄反映，有學校照片匯入會有錯誤訊息的狀況，
+                    //經檢查過後，發現其會抓到已刪除的舊學生資料，導致能作為上傳照片key值的 學號、身分字號可能對不上
+                    //導致上傳失敗，在此增加一條件，僅有一般生才會加入對照表
+                    if (studRec.Class != null && studRec.Status == StudentRecord.StudentStatus.一般)
                     {
                         string key = studRec.Class.Name.Trim() + "_"+K12.Data.Int.GetString(studRec.SeatNo);
                         if (!StudIdx.ContainsKey(key))
