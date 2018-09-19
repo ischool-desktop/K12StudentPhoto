@@ -121,14 +121,23 @@ namespace K12StudentPhoto
 
         public static Bitmap Resize(FileInfo file)
         {
-            Bitmap b = new Bitmap(file.FullName);
-            return Resize(b);
+            //2018/09/19 穎驊因應高雄客服 https://ischool.zendesk.com/agent/#/tickets/6344
+            // 使用者匯入 大量高畫質照片，造成匯入錯誤訊息問題修正，
+            // 原本寫法沒有使用Using，造成每讀入一張5MB 照片，就會造成系統多出記憶體100MB 的負擔，
+            // 若一口匯入 10 張照片就會導致系統 記憶體不足
+            // 向恩正請教後，補上using ，能夠有效的管理  IDisposable  物件型別的回收，使系統記憶體管理更有效率。
+            using (Bitmap b = new Bitmap(file.FullName))
+            {
+                return Resize(b);
+            }            
         }
 
         public static Bitmap Resize(FileInfo file, int maxWidth, int maxHeight)
         {
-            Bitmap b = new Bitmap(file.FullName);
-            return Resize(b, maxWidth, maxHeight);
+            using (Bitmap b = new Bitmap(file.FullName))
+            {
+                return Resize(b, maxWidth, maxHeight);
+            }            
         }
     }
 }

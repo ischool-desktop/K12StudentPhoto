@@ -47,6 +47,7 @@ namespace K12StudentPhoto
                 {
                     Bitmap pic = Photo.Resize(spe.PhotoFileInfo);
                     b64 = Photo.GetBase64Encoding(pic);
+                    //GC.Collect();
                 }
                 catch (Exception ex)
                 {
